@@ -689,6 +689,23 @@ class TCMallocImplementation : public MallocExtension {
     IterateOverRanges(arg, func);
   }
 
+  virtual void eMemoryStats(size_t* virtual_memory_used,
+                            size_t* physical_memory_used,
+                            size_t* bytes_in_use_by_app) {
+    TCMallocStats stats;
+    ExtractStats(&stats, NULL, NULL, NULL);
+    *virtual_memory_used = (stats.pageheap.system_bytes
+                            + stats.metadata_bytes);
+    *physical_memory_used = (*virtual_memory_used
+                             - stats.pageheap.unmapped_bytes);
+    *bytes_in_use_by_app = (*physical_memory_used
+                            - stats.metadata_bytes
+                            - stats.pageheap.free_bytes
+                            - stats.central_bytes
+                            - stats.transfer_bytes
+                            - stats.thread_bytes);
+  }
+
   virtual bool GetNumericProperty(const char* name, size_t* value) {
     ASSERT(name != NULL);
 

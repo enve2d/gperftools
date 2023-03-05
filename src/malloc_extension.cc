@@ -118,6 +118,12 @@ bool MallocExtension::GetNumericProperty(const char* property, size_t* value) {
   return false;
 }
 
+void MallocExtension::eMemoryStats(size_t* virtual_memory_used,
+                                   size_t* physical_memory_used,
+                                   size_t* bytes_in_use_by_app) {
+  return;
+}
+
 bool MallocExtension::SetNumericProperty(const char* property, size_t value) {
   return false;
 }
