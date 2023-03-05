@@ -7,7 +7,7 @@ AC_PREREQ([2.59])
 AC_INIT([gperftools],[2.7],[gperftools@googlegroups.com])
 # Update this value for every release!  (A:B:C will map to foo.so.(A-C).C.B)
 # http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-TCMALLOC_SO_VERSION=9:3:5
+TCMALLOC_SO_VERSION=91:1:1
 PROFILER_SO_VERSION=4:18:4
 
 AC_SUBST(TCMALLOC_SO_VERSION)
