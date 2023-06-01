@@ -112,6 +112,9 @@ DEFINE_bool(malloc_page_fence_never_reclaim,
             EnvToBool("TCMALLOC_PAGE_FENCE_NEVER_RECLAIM", false),
             "Enables making the virtual address space inaccessible "
             "upon a deallocation instead of returning it and reusing later.");
+DEFINE_bool(malloc_page_fence_readable,
+            EnvToBool("TCMALLOC_PAGE_FENCE_READABLE", false),
+            "Permits reads to the page fence.");
 #else
 DEFINE_bool(malloc_page_fence, false, "Not usable (requires mmap)");
 DEFINE_bool(malloc_page_fence_never_reclaim, false, "Not usable (required mmap)");
@@ -503,11 +506,12 @@ class MallocBlock {
     // the address space could take more.
     static size_t max_size_t = ~0;
     if (size > max_size_t - sizeof(MallocBlock)) {
-      RAW_LOG(ERROR, "Massive size passed to malloc: %" PRIuS "", size);
+      RAW_LOG(ERROR, "Massive size passed to malloc: %zu", size);
       return NULL;
     }
     MallocBlock* b = NULL;
     const bool use_malloc_page_fence = FLAGS_malloc_page_fence;
+    const bool malloc_page_fence_readable = FLAGS_malloc_page_fence_readable;
 #ifdef HAVE_MMAP
     if (use_malloc_page_fence) {
       // Put the block towards the end of the page and make the next page
@@ -526,7 +530,8 @@ class MallocBlock {
                 strerror(errno));
       }
       // Mark the page after the block inaccessible
-      if (mprotect(p + (num_pages - 1) * pagesize, pagesize, PROT_NONE)) {
+      if (mprotect(p + (num_pages - 1) * pagesize, pagesize,
+                   PROT_NONE|(malloc_page_fence_readable ? PROT_READ : 0))) {
         RAW_LOG(FATAL, "Guard page setup failed: %s", strerror(errno));
       }
       b = (MallocBlock*) (p + (num_pages - 1) * pagesize - sz);
@@ -1003,7 +1008,7 @@ static SpinLock malloc_trace_lock(SpinLock::LINKER_INITIALIZED);
   do {                                                                  \
     if (FLAGS_malloctrace) {                                            \
       SpinLockHolder l(&malloc_trace_lock);                             \
-      TracePrintf(TraceFd(), "%s\t%" PRIuS "\t%p\t%" GPRIuPTHREAD,      \
+      TracePrintf(TraceFd(), "%s\t%zu\t%p\t%" GPRIuPTHREAD,      \
                   name, size, addr, PRINTABLE_PTHREAD(pthread_self())); \
       TraceStack();                                                     \
       TracePrintf(TraceFd(), "\n");                                     \
@@ -1152,8 +1157,8 @@ static union {
 
 REGISTER_MODULE_INITIALIZER(debugallocation, {
 #if (__cplusplus >= 201103L)
-    COMPILE_ASSERT(alignof(debug_malloc_implementation_space) >= alignof(DebugMallocImplementation),
-                   debug_malloc_implementation_space_is_not_properly_aligned);
+    static_assert(alignof(decltype(debug_malloc_implementation_space)) >= alignof(DebugMallocImplementation),
+                  "DebugMallocImplementation is expected to need just word alignment");
 #endif
   // Either we or valgrind will control memory management.  We
   // register our extension if we're the winner. Otherwise let
@@ -1320,7 +1325,7 @@ extern "C" PERFTOOLS_DLL_DECL void* tc_new(size_t size) {
   void* ptr = debug_cpp_alloc(size, MallocBlock::kNewType, false);
   MallocHook::InvokeNewHook(ptr, size);
   if (ptr == NULL) {
-    RAW_LOG(FATAL, "Unable to allocate %" PRIuS " bytes: new failed.", size);
+    RAW_LOG(FATAL, "Unable to allocate %zu bytes: new failed.", size);
   }
   return ptr;
 }
@@ -1355,7 +1360,7 @@ extern "C" PERFTOOLS_DLL_DECL void* tc_newarray(size_t size) {
   void* ptr = debug_cpp_alloc(size, MallocBlock::kArrayNewType, false);
   MallocHook::InvokeNewHook(ptr, size);
   if (ptr == NULL) {
-    RAW_LOG(FATAL, "Unable to allocate %" PRIuS " bytes: new[] failed.", size);
+    RAW_LOG(FATAL, "Unable to allocate %zu bytes: new[] failed.", size);
   }
   return ptr;
 }

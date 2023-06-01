@@ -1,3 +1,4 @@
+// -*- Mode: C++; c-basic-offset: 2; indent-tabs-mode: nil -*-
 /* Copyright (c) 2005-2007, Google Inc.
  * All rights reserved.
  *
@@ -41,7 +42,7 @@
  * related platforms should not be difficult.
  */
 #if (defined(__i386__) || defined(__x86_64__) || defined(__arm__) || \
-     defined(__mips__) || defined(__PPC__) || defined(__aarch64__) ||       \
+     defined(__mips__) || defined(__PPC__) || defined(__aarch64__) || defined(__loongarch64) || \
      defined(__s390__)) && defined(__linux)
 
 /* Define the THREADS symbol to make sure that there is exactly one core dumper
