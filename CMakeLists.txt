@@ -54,7 +54,7 @@ include(CheckTypeSize)
 include(CheckVariableExists)
 include(CMakeDependentOption)
 include(CTest)
-include(CPack)
+#include(CPack)
 include(GNUInstallDirs)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
