@@ -55,7 +55,7 @@ include(CheckVariableExists)
 include(CMakeDependentOption)
 include(CTest)
 #include(CPack)
-include(GNUInstallDirs)
+#include(GNUInstallDirs)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(DefineTargetVariables)
@@ -555,9 +555,9 @@ set(googleinclude_HEADERS
         src/google/stacktrace.h
         src/google/tcmalloc.h
         )
-install(FILES ${googleinclude_HEADERS}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/google
-        )
+#install(FILES ${googleinclude_HEADERS}
+#        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/google
+#        )
 
 # This is a 'convenience library' -- it's not actually installed or anything
 set(LOGGING_INCLUDES
@@ -754,7 +754,7 @@ endif()
 
 # If we are not compiling with stacktrace support, pprof is worthless
 if(WITH_STACK_TRACE)
-  install(FILES src/pprof DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME pprof-symbolize)
+  #install(FILES src/pprof DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME pprof-symbolize)
 
   if(BUILD_TESTING)
     add_test(NAME pprof_unittest
@@ -762,9 +762,9 @@ if(WITH_STACK_TRACE)
             VERBATIM)
     list(APPEND TESTS_ENVIRONMENT "PPROF_PATH=${CMAKE_CURRENT_SOURCE_DIR}/src/pprof")
   endif()
-  if(INSTALL_PPROF)
-      install(FILES src/pprof DESTINATION ${CMAKE_INSTALL_BINDIR})
-  endif()
+  #if(INSTALL_PPROF)
+  #    install(FILES src/pprof DESTINATION ${CMAKE_INSTALL_BINDIR})
+  #endif()
 endif()
 
 ### ------- tcmalloc_minimal (thread-caching malloc)
@@ -843,7 +843,7 @@ set_target_properties(tcmalloc_minimal PROPERTIES
         VERSION ${TCMALLOC_SO_VERSION}
         SOVERSION ${TCMALLOC_SO_VERSION})
 weaken_object(tcmalloc_minimal)
-install(TARGETS tcmalloc_minimal)
+#install(TARGETS tcmalloc_minimal)
 if(GPERFTOOLS_BUILD_STATIC)
     add_library(tcmalloc_minimal_static STATIC ${libtcmalloc_minimal_internal_la_SOURCES})
     target_compile_definitions(tcmalloc_minimal_static PRIVATE NO_TCMALLOC_SAMPLES NDEBUG)
@@ -856,7 +856,7 @@ if(GPERFTOOLS_BUILD_STATIC)
               OUTPUT_NAME tcmalloc_minimal)
     endif()
     weaken_object(tcmalloc_minimal_static)
-    install(TARGETS tcmalloc_minimal_static)
+    #install(TARGETS tcmalloc_minimal_static)
 endif()
 
 if(BUILD_TESTING)
@@ -1018,7 +1018,7 @@ if(GPERFTOOLS_BUILD_DEBUGALLOC)
           TCMALLOC_FOR_DEBUGALLOCATION)
   target_link_libraries(tcmalloc_minimal_debug PRIVATE ${libtcmalloc_minimal_la_LIBADD})
   weaken_object(tcmalloc_minimal_debug)
-  install(TARGETS tcmalloc_minimal_debug)
+  #install(TARGETS tcmalloc_minimal_debug)
   set_target_properties(tcmalloc_minimal_debug PROPERTIES
           VERSION ${TCMALLOC_SO_VERSION}
           SOVERSION ${TCMALLOC_SO_VERSION})
@@ -1032,7 +1032,7 @@ if(GPERFTOOLS_BUILD_DEBUGALLOC)
     endif()
     target_link_libraries(tcmalloc_minimal_debug_static PRIVATE ${libtcmalloc_minimal_la_LIBADD})
     weaken_object(tcmalloc_minimal_debug_static)
-    install(TARGETS tcmalloc_minimal_debug_static)
+    #install(TARGETS tcmalloc_minimal_debug_static)
   endif()
 
   ### Unittests
@@ -1178,7 +1178,7 @@ if(GPERFTOOLS_BUILD_HEAP_CHECKER OR GPERFTOOLS_BUILD_HEAP_PROFILER)
           VERSION ${TCMALLOC_SO_VERSION}
           SOVERSION ${TCMALLOC_SO_VERSION})
   weaken_object(tcmalloc)
-  install(TARGETS tcmalloc)
+  #install(TARGETS tcmalloc)
   if(GPERFTOOLS_BUILD_STATIC)
     add_library(tcmalloc_static STATIC ${libtcmalloc_la_SOURCES})
     target_compile_definitions(tcmalloc_static PRIVATE ${libtcmalloc_la_DEFINE})
@@ -1187,7 +1187,7 @@ if(GPERFTOOLS_BUILD_HEAP_CHECKER OR GPERFTOOLS_BUILD_HEAP_PROFILER)
     endif()
     target_link_libraries(tcmalloc_static PRIVATE ${libtcmalloc_la_LIBADD})
     weaken_object(tcmalloc_static)
-    install(TARGETS tcmalloc_static)
+    #install(TARGETS tcmalloc_static)
   endif()
 
   ### Unittests
@@ -1306,7 +1306,7 @@ if(GPERFTOOLS_BUILD_DEBUGALLOC)
             VERSION ${TCMALLOC_SO_VERSION}
             SOVERSION ${TCMALLOC_SO_VERSION})
     weaken_object(tcmalloc_debug)
-    install(TARGETS tcmalloc_debug)
+    #install(TARGETS tcmalloc_debug)
     if(GPERFTOOLS_BUILD_STATIC)
       add_library(tcmalloc_debug_static STATIC src/debugallocation.cc ${HEAP_CHECKER_SOURCES} ${TCMALLOC_INCLUDES})
       target_compile_definitions(tcmalloc_debug_static PRIVATE ${libtcmalloc_la_DEFINE}
@@ -1317,7 +1317,7 @@ if(GPERFTOOLS_BUILD_DEBUGALLOC)
                 OUTPUT_NAME tcmalloc_debug)
       endif()
       weaken_object(tcmalloc_debug_static)
-      install(TARGETS tcmalloc_debug_static)
+      #install(TARGETS tcmalloc_debug_static)
     endif()
 
     ### Unittests
@@ -1379,14 +1379,14 @@ if(GPERFTOOLS_BUILD_CPU_PROFILER)
   set_target_properties(profiler PROPERTIES
           VERSION ${PROFILER_SO_VERSION}
           SOVERSION ${PROFILER_SO_VERSION})
-  install(TARGETS profiler)
+  #install(TARGETS profiler)
   if(GPERFTOOLS_BUILD_STATIC)
     add_library(profiler_static STATIC ${libprofiler_la_SOURCES})
     target_link_libraries(profiler_static PRIVATE ${libprofiler_la_LIBADD})
     if(NOT MSVC)
       set_target_properties(profiler_static PROPERTIES OUTPUT_NAME profiler)
     endif()
-    install(TARGETS profiler_static)
+    #install(TARGETS profiler_static)
   endif()
 
   # See discussion above (under LIBTCMALLOC_MINIMAL) for why we do this.
@@ -1430,10 +1430,10 @@ if(GPERFTOOLS_BUILD_CPU_PROFILER)
   endif()
 endif()
 
-install(FILES
-${CMAKE_CURRENT_BINARY_DIR}/gperftools/tcmalloc.h
-        ${perftoolsinclude_HEADERS}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gperftools)
+#install(FILES
+#${CMAKE_CURRENT_BINARY_DIR}/gperftools/tcmalloc.h
+#        ${perftoolsinclude_HEADERS}
+#        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gperftools)
 
 ### ------- CPU profiler and heap checker, in one!
 
@@ -1455,7 +1455,7 @@ if(GPERFTOOLS_BUILD_HEAP_PROFILER OR GPERFTOOLS_BUILD_HEAP_CHECKER)
       # specify it twice causes link-time duplicate-definition errors. :-(
       target_link_libraries(tcmalloc_and_profiler PRIVATE ${libtcmalloc_la_LIBADD})
       weaken_object(tcmalloc_and_profiler)
-      install(TARGETS tcmalloc_and_profiler)
+      #install(TARGETS tcmalloc_and_profiler)
       if(GPERFTOOLS_BUILD_STATIC)
         add_library(tcmalloc_and_profiler_static STATIC ${libtcmalloc_la_SOURCES} ${libprofiler_la_SOURCES})
         target_compile_definitions(tcmalloc_and_profiler_static PRIVATE ${libtcmalloc_la_DEFINE})
@@ -1465,7 +1465,7 @@ if(GPERFTOOLS_BUILD_HEAP_PROFILER OR GPERFTOOLS_BUILD_HEAP_CHECKER)
                   OUTPUT_NAME tcmalloc_and_profiler)
         endif()
         weaken_object(tcmalloc_and_profiler_static)
-        install(TARGETS tcmalloc_and_profiler_static)
+        #install(TARGETS tcmalloc_and_profiler_static)
       endif()
 
       if(BUILD_TESTING)
@@ -1514,13 +1514,13 @@ set(NAME tcmalloc_minimal_debug)
 configure_file(cmake/pkgconfig.pc libtcmalloc_minimal_debug.pc @ONLY)
 set(NAME profiler)
 configure_file(cmake/pkgconfig.pc libprofiler.pc @ONLY)
-install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/libtcmalloc.pc
-        ${CMAKE_CURRENT_BINARY_DIR}/libtcmalloc_minimal.pc
-        ${CMAKE_CURRENT_BINARY_DIR}/libtcmalloc_debug.pc
-        ${CMAKE_CURRENT_BINARY_DIR}/libtcmalloc_minimal_debug.pc
-        ${CMAKE_CURRENT_BINARY_DIR}/libprofiler.pc
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+#install(FILES
+#        ${CMAKE_CURRENT_BINARY_DIR}/libtcmalloc.pc
+#        ${CMAKE_CURRENT_BINARY_DIR}/libtcmalloc_minimal.pc
+#        ${CMAKE_CURRENT_BINARY_DIR}/libtcmalloc_debug.pc
+#        ${CMAKE_CURRENT_BINARY_DIR}/libtcmalloc_minimal_debug.pc
+#        ${CMAKE_CURRENT_BINARY_DIR}/libprofiler.pc
+#        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
 #TODO @GENERATE_CHANGELOG_RULES@
 #TODO dist
