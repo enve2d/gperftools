@@ -105,7 +105,7 @@ if(gperftools_build_minimal)
 endif()
 
 cmake_dependent_option(
-  gperftools_build_benchmark "Build benchmark" ON "NOT MINGW AND NOT MSVC" OFF)
+  gperftools_build_benchmark "Build benchmark" OFF)
 
 option(gperftools_enable_stacktrace_via_backtrace
        "Enable use of backtrace() for stacktrace capturing (may deadlock)"
